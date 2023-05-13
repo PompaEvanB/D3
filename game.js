@@ -1,21 +1,33 @@
 class G1 extends Phaser.Scene{
     constructor(){
-        super();
+        super("G1");
     }
     preload(){
 
     }
     create(){
+
+        // add a button that lets people retry the level upon clicking it.
+        let retry = this.add.text(0, 0, 'Retry', { font: '40px "Press Start 2P"' });
+        retry.setInteractive();
+        retry.on('pointerup', function(){
+            this.scene.restart();
+        }, this);
+
         let greenball = this.add.ellipse(600,500,75,75,0x00ff00); //create the greenball that will be fired
         greenball.setInteractive(); // make it interactable
 
         let redBall = this.add.ellipse(100,100,75,75,0xff0000); // create the red ball that will be thrown
         redBall.setInteractive(); // make it interactable
 
+        //Add the future physics for the red ball, but deactivate them until we need them
         this.physics.add.existing(redBall);
         redBall.body.setBounce(0.7);
-        redBall.body.collideWorldBounds = true;
+        //redBall.body.collideWorldBounds = true;
         redBall.body.allowGravity = false;
+
+        let velocityMultiplier = 2.5;
+
         // if the redball is clicked, it moves with the mouse. the next time it is clicked, it gets placed down.
         // if the red ball is dragged, it will shoot from its current position in the opposite direction from the mouse.
 
@@ -49,9 +61,13 @@ class G1 extends Phaser.Scene{
             drag = false;
         });
 
-        // if at any point we mouse up, we cannot be dragging the ball.
-        this.input.on('pointerup', function(){
-            drag = false;
+        // if at any point we mouse up, check if we are dragging the ball.
+        this.input.on('pointerup', function(pointer){
+            if(drag){ // if we ARE dragging the ball, shoot the ball based off of the mouses inverted position AND enable physics for the ball.
+                redBall.body.allowGravity = true;
+                redBall.body.setVelocity((redBall.x-pointer.x)*velocityMultiplier, (redBall.y-pointer.y)*velocityMultiplier);
+            }
+            drag = false; //set drag to false afterward because we are no longer dragging the ball.
         });
 
         // when the mouse is moving check to see if we should be moving the ball.
@@ -59,8 +75,6 @@ class G1 extends Phaser.Scene{
             // if we are dragging the mouse, we should not be moving the ball.
             if(drag){
                 // reset both click and clicked to ensure we will always be able to move the ball after we drag.
-                redBall.body.allowGravity = true;
-
                 click = false;
                 clicked = false;
             }
