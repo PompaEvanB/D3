@@ -17,6 +17,47 @@ class G1 extends Phaser.Scene{
         let greenball = this.add.ellipse(600,500,75,75,0x00ff00); //create the greenball that will be fired
         greenball.setInteractive(); // make it interactable
 
+        //Add the future physics for the red ball, but deactivate them until we need them
+        this.physics.add.existing(greenball);
+        greenball.body.setBounce(0.7);
+        //redBall.body.collideWorldBounds = true;
+        greenball.body.allowGravity = false;
+
+        let velocityMultiplier2 = 4;
+
+        // if the redball is clicked, it moves with the mouse. the next time it is clicked, it gets placed down.
+        // if the red ball is dragged, it will shoot from its current position in the opposite direction from the mouse.
+
+        let click2 = false; // check to see if the ball has been clicked on.
+        let clicked2 = false; // check to see if the ball has been clicked before.
+        let drag2 = false; // check to see if the ball is being dragged.
+
+        // when the red ball is clicked on
+        greenball.on('pointerdown', function(){
+            // tell the game that the ball has been clicked by changing to boolean
+            if(click2){
+                click2 = false;
+            }
+            else{
+                click2 = true;
+            }
+            // set drag to true because we have not clicked off yet.
+            drag2 = true;
+        });
+
+        // when the red ball is clicked off of
+        greenball.on('pointerup', function(){
+            // if the ball has been clicked before, let the game know by setting clicked to false.
+            if(click2){
+                clicked2 = true;
+            }
+            else{
+                clicked2 = false;
+            }
+            // set drag to false because we clicked off of the ball.
+            drag2 = false;
+        });
+        //----------------------------------------------------------------------------------------------------------------------------
         let redBall = this.add.ellipse(100,100,75,75,0xff0000); // create the red ball that will be thrown
         redBall.setInteractive(); // make it interactable
 
@@ -68,6 +109,12 @@ class G1 extends Phaser.Scene{
                 redBall.body.setVelocity((redBall.x-pointer.x)*velocityMultiplier, (redBall.y-pointer.y)*velocityMultiplier);
             }
             drag = false; //set drag to false afterward because we are no longer dragging the ball.
+
+            if(drag2){ // if we ARE dragging the ball, shoot the ball based off of the mouses inverted position AND enable physics for the ball.
+                greenball.body.allowGravity = true;
+                greenball.body.setVelocity((greenball.x-pointer.x)*velocityMultiplier2, (greenball.y-pointer.y)*velocityMultiplier2);
+            }
+            drag2 = false; //set drag to false afterward because we are no longer dragging the ball.
         });
 
         // when the mouse is moving check to see if we should be moving the ball.
@@ -82,7 +129,26 @@ class G1 extends Phaser.Scene{
                 redBall.x = pointer.x
                 redBall.y = pointer.y
             }
+
+            // if we are dragging the mouse, we should not be moving the ball.
+            if(drag2){
+                // reset both click and clicked to ensure we will always be able to move the ball after we drag.
+                click2 = false;
+                clicked2 = false;
+            }
+            if(clicked2){ // if this is our first click, move the ball with the mouse.
+                greenball.x = pointer.x
+                greenball.y = pointer.y
+            }            
         });
+        // Check for collision between ellipse1 and ellipse2
+        this.physics.add.collider(greenball, redBall, collisionHandler, null, this);
+
+        // Collision handler function
+        function collisionHandler(greenball, redBall) {
+            // Collision logic or actions to perform when the ellipses collide
+            redBall.destroy();
+        }        
     }
     update(){
 
