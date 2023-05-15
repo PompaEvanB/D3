@@ -7,6 +7,12 @@ class G1 extends Phaser.Scene{
     }
     create(){
 
+        let score = 0;
+        let totalspeed = 0;
+        let tempdistanceX = 0;
+        let tempdistanceY = 0;
+        let totaldistance = 0;
+        
         // add a button that lets people retry the level upon clicking it.
         let retry = this.add.text(0, 0, 'Retry', { font: '40px "Press Start 2P"' });
         retry.setInteractive();
@@ -105,8 +111,12 @@ class G1 extends Phaser.Scene{
         // if at any point we mouse up, check if we are dragging the ball.
         this.input.on('pointerup', function(pointer){
             if(drag){ // if we ARE dragging the ball, shoot the ball based off of the mouses inverted position AND enable physics for the ball.
+                tempdistanceX = redBall.x;
+                tempdistanceY = redBall.y;
                 redBall.body.allowGravity = true;
                 redBall.body.setVelocity((redBall.x-pointer.x)*velocityMultiplier, (redBall.y-pointer.y)*velocityMultiplier);
+
+
             }
             drag = false; //set drag to false afterward because we are no longer dragging the ball.
 
@@ -147,6 +157,10 @@ class G1 extends Phaser.Scene{
         // Collision handler function
         function collisionHandler(greenball, redBall) {
             // Collision logic or actions to perform when the ellipses collide
+            totalspeed = redBall.body.velocity.x+redBall.body.velocity.y;
+            totaldistance = Math.sqrt(Math.pow(redBall.x-tempdistanceX,2)+Math.pow(redBall.y-tempdistanceY,2));
+            score = totalspeed + totaldistance;
+            console.log(totaldistance);
             redBall.destroy();
         }        
     }
@@ -154,7 +168,6 @@ class G1 extends Phaser.Scene{
 
     }
 }
-
 const config = {
     type: Phaser.AUTO,
     width: 900,
