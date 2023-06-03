@@ -73,10 +73,10 @@ class G1 extends Phaser.Scene{
         greenball.on('pointerup', function(){
             // if the ball has been clicked before, let the game know by setting clicked to false.
             if(greenClick){
-                greenClicked = false;
+                greenClicked = true;
             }
             else{
-                greenClicked = true;
+                greenClicked = false;
             }
             // set drag to false because we clicked off of the ball.
             greenDrag = false;
@@ -640,7 +640,7 @@ const config = {
     type: Phaser.AUTO,
     width: 900,
     height: 600,
-    backgroundColor: '#4a90e2',
+    backgroundColor: '#f542d1',
     physics: {
         default: 'arcade',
         arcade: {
