@@ -73,10 +73,10 @@ class G1 extends Phaser.Scene{
         greenball.on('pointerup', function(){
             // if the ball has been clicked before, let the game know by setting clicked to false.
             if(greenClick){
-                greenClicked = true;
+                greenClicked = false;
             }
             else{
-                greenClicked = false;
+                greenClicked = true;
             }
             // set drag to false because we clicked off of the ball.
             greenDrag = false;
